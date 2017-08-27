@@ -2,7 +2,9 @@ import {FETCH_MOVIES, FETCH_MOVIES_ERROR, FETCH_MOVIES_SUCCESS} from "./actions"
 
 const initialState = {
   pending: false,
-  movies: []
+  movies: {
+    results: []
+  }
 };
 
 export const movies = (state = initialState, action) => {

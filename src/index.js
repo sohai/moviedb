@@ -4,18 +4,19 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import { createEpicMiddleware } from 'redux-observable';
-import {searchMovies} from "./epics";
-import {applyMiddleware, createStore} from "redux";
+import {searchMovies} from "./store/epics";
+import {applyMiddleware, createStore, compose } from "redux";
 import { Provider } from 'react-redux';
-import {movies} from "./reducers";
+import {movies} from "./store/reducers";
 
 const epics = createEpicMiddleware(searchMovies);
 /**
  * The redux state store, built with the Epic middleware.
  */
-const store = createStore(movies,
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(movies, /* preloadedState, */ composeEnhancers(
   applyMiddleware(epics)
-);
+));
 
 
 render(

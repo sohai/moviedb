@@ -1,25 +1,27 @@
 import React, {Component} from 'react';
-import './App.css';
 import {connect} from 'react-redux'
-import {fetchMovies} from "./actions";
-import {getMovies, isPending} from "./reducers";
+import {fetchMovies} from "./store/actions";
+import {getMovies, isPending} from "./store/reducers";
 import {Subject} from 'rxjs/Subject';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/takeUntil';
+import TextField from 'material-ui/TextField';
+import Grid from 'material-ui/Grid';
+import MovieCard from './components/MovieCard';
 
 class App extends Component {
 
   componentWillMount() {
     const {fetchMovies} = this.props;
     this.unmount$ = new Subject();
-    this.keyUp$ = new Subject();
+    this.queryChange$ = new Subject();
 
-    this.keyUp$
+    this.queryChange$
       .map(e => e.target.value)
       .filter(val => val.length > 2)
-      .debounceTime(200)
+      .debounceTime(400)
       .takeUntil(this.unmount$)
       .subscribe(val => {
         fetchMovies(val)
@@ -35,12 +37,20 @@ class App extends Component {
     const {movies} = this.props;
     return (
       <div className="App">
-        <input type="text" onKeyUp={(e) => this.keyUp$.next(e)}/>
-        <ul>
-          {movies.map(movie =>
-            <li>{movie.original_title}</li>
+        <TextField
+          id="query"
+          label="Type here..."
+          className="SearchInput"
+          onChange={e => this.queryChange$.next(e)}
+          margin="normal"
+        />
+        <Grid container spacing={24}>
+          {movies.results.map(movie =>
+            <Grid item key={movie.id}>
+              <MovieCard item={movie}/>
+            </Grid>
           )}
-        </ul>
+        </Grid>
       </div>
     );
   }
